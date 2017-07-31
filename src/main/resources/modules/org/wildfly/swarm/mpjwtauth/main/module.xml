@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.5" name="org.wildfly.swarm.mpjwtauth">
+  <dependencies>
+    <module name="org.eclipse.microprofile.jwt" export="true" />
+    <module name="javax.api" />
+    <module name="io.undertow.core" />
+    <module name="io.undertow.servlet" />
+    <module name="org.wildfly.swarm.jaxrs" />
+    <module name="org.wildfly.swarm.mpjwtauth" />
+  </dependencies>
+</module>
