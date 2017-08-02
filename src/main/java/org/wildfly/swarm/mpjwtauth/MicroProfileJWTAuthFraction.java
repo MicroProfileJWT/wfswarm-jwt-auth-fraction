@@ -1,28 +1,43 @@
+/**
+ * Copyright 2017 Red Hat, Inc, and individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.wildfly.swarm.mpjwtauth;
-
-import java.security.PublicKey;
 
 import org.wildfly.swarm.config.runtime.AttributeDocumentation;
 import org.wildfly.swarm.spi.api.Defaultable;
 import org.wildfly.swarm.spi.api.Fraction;
 import org.wildfly.swarm.spi.api.annotations.Configurable;
+import org.wildfly.swarm.spi.api.annotations.DeploymentModule;
 
 import static org.wildfly.swarm.spi.api.Defaultable.integer;
 import static org.wildfly.swarm.spi.api.Defaultable.string;
 
 /**
- * Created by starksm on 7/28/17.
+ * A fraction that adds support for the MicroProfile 1.0 JWT RBAC authentication and authorization spec.
  */
 @Configurable("swarm.mpjwtauth")
+@DeploymentModule(name="org.eclipse.microprofile.jwt")
 public class MicroProfileJWTAuthFraction implements Fraction<MicroProfileJWTAuthFraction> {
 
     @AttributeDocumentation("The URI of the JWT token issuer")
-    @Configurable("swarm.mpjwtauth.token.issuer")
+    @Configurable("swarm.mpjwtauth.token.issuedBy")
     private Defaultable<String> tokenIssuer = string("http://localhost");
 
-    @AttributeDocumentation("The public key of the JWT token issuer")
-    @Configurable("swarm.mpjwtauth.token.publicKey")
-    private PublicKey publicKey;
+    @AttributeDocumentation("The public key of the JWT token signer")
+    @Configurable("swarm.mpjwtauth.token.signerPubKey")
+    private String publicKey;
 
     @AttributeDocumentation("The JWT token expiration grace period in seconds ")
     @Configurable("swarm.mpjwtauth.token.expGracePeriod")
@@ -37,11 +52,11 @@ public class MicroProfileJWTAuthFraction implements Fraction<MicroProfileJWTAuth
         this.tokenIssuer = tokenIssuer;
     }
 
-    public PublicKey getPublicKey() {
+    public String getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(PublicKey publicKey) {
+    public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
     }
 

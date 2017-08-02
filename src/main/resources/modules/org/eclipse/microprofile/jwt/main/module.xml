@@ -16,7 +16,6 @@
   <dependencies>
     <module name="io.undertow.core" export="true" />
     <module name="io.undertow.servlet" export="true" />
-    <module name="org.wildfly.swarm.security" export="true" />
     <module name="org.picketbox" export="true" />
     <system>
       <paths>

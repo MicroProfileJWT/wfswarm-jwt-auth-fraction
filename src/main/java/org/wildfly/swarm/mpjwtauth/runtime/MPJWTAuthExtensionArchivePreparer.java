@@ -1,37 +1,47 @@
+/**
+ * Copyright 2017 Red Hat, Inc, and individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.wildfly.swarm.mpjwtauth.runtime;
-
-import java.io.InputStream;
 
 import javax.inject.Inject;
 
 import io.undertow.servlet.ServletExtension;
-import org.eclipse.microprofile.jwt.impl.DefaultJWTCallerPrincipal;
 import org.eclipse.microprofile.jwt.impl.DefaultJWTCallerPrincipalFactory;
-import org.eclipse.microprofile.jwt.impl.MPAccessToken;
-import org.eclipse.microprofile.jwt.principal.JWTAuthContextInfo;
-import org.eclipse.microprofile.jwt.principal.JWTCallerPrincipal;
 import org.eclipse.microprofile.jwt.principal.JWTCallerPrincipalFactory;
-import org.eclipse.microprofile.jwt.principal.ParseException;
-import org.eclipse.microprofile.jwt.wfswarm.JWTAccount;
-import org.eclipse.microprofile.jwt.wfswarm.JWTAuthMechanism;
-import org.eclipse.microprofile.jwt.wfswarm.JWTAuthMechanismFactory;
 import org.eclipse.microprofile.jwt.wfswarm.JWTAuthMethodExtension;
+import org.jboss.logging.Logger;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.impl.base.asset.ServiceProviderAsset;
+import org.wildfly.swarm.mpjwtauth.MicroProfileJWTAuthFraction;
 import org.wildfly.swarm.spi.api.DeploymentProcessor;
 import org.wildfly.swarm.spi.runtime.annotations.DeploymentScoped;
 import org.wildfly.swarm.undertow.WARArchive;
 
 /**
- * Created by starksm on 7/29/17.
+ * A DeploymentProcessor implementation for the MP-JWT custom authentication mechanism that adds support
+ * for that mechanism to any war the declares a login-config/auth-method = MP-JWT.
  */
 @DeploymentScoped
 public class MPJWTAuthExtensionArchivePreparer implements DeploymentProcessor {
+    private static Logger log = Logger.getLogger(MPJWTAuthExtensionArchivePreparer.class);
     private final Archive archive;
 
+    @Inject
+    private MicroProfileJWTAuthFraction fraction;
     @Inject
     public MPJWTAuthExtensionArchivePreparer(Archive archive) {
         this.archive = archive;
@@ -39,34 +49,23 @@ public class MPJWTAuthExtensionArchivePreparer implements DeploymentProcessor {
 
     @Override
     public void process() throws Exception {
-        Class classes[] = {
-                /*
-                JWTAuthMethodExtension.class, JWTAuthMechanism.class, JWTAuthMechanismFactory.class,
-                // principal package
-                JWTAccount.class, JWTAuthContextInfo.class, JWTCallerPrincipal.class, JWTCallerPrincipalFactory.class, ParseException.class,
-                // impl package
-                DefaultJWTCallerPrincipal.class, DefaultJWTCallerPrincipalFactory.class, MPAccessToken.class
-                */
-        };
+        // This is really a work around addAsServiceProvider not supporting multiple addAsServiceProvider calls (https://github.com/shrinkwrap/shrinkwrap/issues/112)
         JavaArchive jwtAuthJar = ShrinkWrap.create(JavaArchive.class, "jwt-auth-wfswarm.jar")
-                .addClasses(classes)
                 .addAsServiceProvider(ServletExtension.class, JWTAuthMethodExtension.class)
                 .addAsServiceProvider(JWTCallerPrincipalFactory.class, DefaultJWTCallerPrincipalFactory.class);
         WARArchive war = archive.as(WARArchive.class);
-        war.addModule("org.eclipse.microprofile.jwt");
         war.addAsLibraries(jwtAuthJar);
-        System.out.println("MPJWTAuthExtensionArchivePreparer, jar: "+jwtAuthJar.toString(true));
-        System.out.println("MPJWTAuthExtensionArchivePreparer, war: "+war.toString(true));
-        /*
-        war.addAsServiceProvider(ServletExtension.class, JWTAuthMethodExtension.class);
-        // debugging
-        Node extNode = war.get("WEB-INF/classes/META-INF/services/io.undertow.servlet.ServletExtension");
-        ServiceProviderAsset asset = (ServiceProviderAsset) extNode.getAsset();
-        InputStream is = asset.openStream();
-        byte[] tmp = new byte[1024];
-        int length = is.read(tmp);
-        is.close();
-        System.out.printf("MPJWTAuthExtensionArchivePreparer, set ServletExtension: %s", new String(tmp, 0, length));
-        */
+        if(fraction.getTokenIssuer().isPresent()) {
+            log.debugf("Issuer: %s", fraction.getTokenIssuer().get());
+            war.addAsManifestResource(new StringAsset(fraction.getTokenIssuer().get()), "MP-JWT-ISSUER");
+        }
+        if(fraction.getPublicKey() != null) {
+            log.debugf("PublicKey: %s", fraction.getPublicKey());
+            war.addAsManifestResource(new StringAsset(fraction.getPublicKey()), "MP-JWT-SIGNER");
+        }
+        if(log.isDebugEnabled()) {
+            log.debug("jar: " + jwtAuthJar.toString(true));
+            log.debug("war: " + war.toString(true));
+        }
     }
 }
