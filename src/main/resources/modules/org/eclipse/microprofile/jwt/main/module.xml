@@ -2,24 +2,23 @@
 <module xmlns="urn:jboss:module:1.5" name="org.eclipse.microprofile.jwt">
   <resources>
     <artifact name="org.eclipse.microprofile.jwt:jwt-auth-wfswarm:${version.swarm.mpjwtauth}" />
-    <artifact name="org.eclipse.microprofile.apis:microprofile-jwt-auth_1.0_api:1.0-SNAPSHOT" />
+    <artifact name="org.eclipse.microprofile.jwt:microprofile-jwt-auth:1.0-SNAPSHOT" />
     <artifact name="org.eclipse.microprofile.jwt:jwt-auth-principal-ri:1.0-SNAPSHOT" />
-    <artifact name="com.fasterxml.jackson.core:jackson-core:2.5.4" />
-    <artifact name="com.fasterxml.jackson.core:jackson-databind:2.5.4" />
-    <artifact name="com.fasterxml.jackson.core:jackson-annotations:2.5.0" />
-    <artifact name="org.keycloak:keycloak-common:3.2.0.Final" />
-    <artifact name="org.keycloak:keycloak-core:3.2.0.Final" />
-    <artifact name="org.bouncycastle:bcprov-jdk15on:1.52" />
     <artifact name="javax.security.enterprise:javax.security.enterprise-api:1.0-b07" />
+    <artifact name="org.bitbucket.b_c:jose4j:0.6.0" />
+    <artifact name="org.slf4j:slf4j-api:1.7.21" />
   </resources>
 
   <dependencies>
     <module name="io.undertow.core" export="true" />
     <module name="io.undertow.servlet" export="true" />
     <module name="org.picketbox" export="true" />
+    <module name="org.jboss.logging" export="true" />
     <system>
       <paths>
         <path name="javax/security/auth" />
+        <path name="javax/crypto" />
+        <path name="javax/crypto/spec" />
       </paths>
     </system>
   </dependencies>
