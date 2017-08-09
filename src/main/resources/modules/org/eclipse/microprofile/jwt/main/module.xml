@@ -17,6 +17,8 @@
     <system>
       <paths>
         <path name="javax/security/auth" />
+        <path name="javax/security/auth/callback" />
+        <path name="javax/security/auth/login" />
         <path name="javax/crypto" />
         <path name="javax/crypto/spec" />
       </paths>

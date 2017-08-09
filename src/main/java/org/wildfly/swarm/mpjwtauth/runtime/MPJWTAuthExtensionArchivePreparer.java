@@ -15,12 +15,18 @@
  */
 package org.wildfly.swarm.mpjwtauth.runtime;
 
+import java.util.Collection;
+
 import javax.inject.Inject;
 
 import io.undertow.servlet.ServletExtension;
 import org.eclipse.microprofile.jwt.impl.DefaultJWTCallerPrincipalFactory;
 import org.eclipse.microprofile.jwt.principal.JWTCallerPrincipalFactory;
 import org.eclipse.microprofile.jwt.wfswarm.JWTAuthMethodExtension;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationValue;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
 import org.jboss.logging.Logger;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -38,13 +44,16 @@ import org.wildfly.swarm.undertow.WARArchive;
 @DeploymentScoped
 public class MPJWTAuthExtensionArchivePreparer implements DeploymentProcessor {
     private static Logger log = Logger.getLogger(MPJWTAuthExtensionArchivePreparer.class);
+    public static final DotName LOGIN_CONFIG = DotName.createSimple("org.eclipse.microprofile.annotation.LoginConfig");
     private final Archive archive;
+    private final IndexView index;
 
     @Inject
     private MicroProfileJWTAuthFraction fraction;
     @Inject
-    public MPJWTAuthExtensionArchivePreparer(Archive archive) {
+    public MPJWTAuthExtensionArchivePreparer(Archive archive, IndexView index) {
         this.archive = archive;
+        this.index = index;
     }
 
     @Override
@@ -55,6 +64,15 @@ public class MPJWTAuthExtensionArchivePreparer implements DeploymentProcessor {
                 .addAsServiceProvider(JWTCallerPrincipalFactory.class, DefaultJWTCallerPrincipalFactory.class);
         WARArchive war = archive.as(WARArchive.class);
         war.addAsLibraries(jwtAuthJar);
+        // Check for LoginConfig annotation
+        Collection<AnnotationInstance> lcAnnotations = index.getAnnotations(LOGIN_CONFIG);
+        for (AnnotationInstance lc : lcAnnotations) {
+            AnnotationValue auuthMethod = lc.value("authMethod");
+            if(auuthMethod != null) {
+                log.infof("Found LoginConfig(%s)", auuthMethod.asString());
+            }
+        }
+
         if(fraction.getTokenIssuer().isPresent()) {
             log.debugf("Issuer: %s", fraction.getTokenIssuer().get());
             war.addAsManifestResource(new StringAsset(fraction.getTokenIssuer().get()), "MP-JWT-ISSUER");
@@ -63,9 +81,9 @@ public class MPJWTAuthExtensionArchivePreparer implements DeploymentProcessor {
             log.debugf("PublicKey: %s", fraction.getPublicKey());
             war.addAsManifestResource(new StringAsset(fraction.getPublicKey()), "MP-JWT-SIGNER");
         }
-        if(log.isDebugEnabled()) {
+        if(log.isInfoEnabled()) {
             log.debug("jar: " + jwtAuthJar.toString(true));
-            log.debug("war: " + war.toString(true));
+            log.info("war: " + war.toString(true));
         }
     }
 }
