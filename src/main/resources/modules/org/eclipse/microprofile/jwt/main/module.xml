@@ -2,7 +2,7 @@
 <module xmlns="urn:jboss:module:1.5" name="org.eclipse.microprofile.jwt">
   <resources>
     <artifact name="org.eclipse.microprofile.jwt:jwt-auth-wfswarm:${version.swarm.mpjwtauth}" />
-    <artifact name="org.eclipse.microprofile.jwt:microprofile-jwt-auth:1.0-SNAPSHOT" />
+    <artifact name="org.eclipse.microprofile.jwt:microprofile-jwt-auth-api:1.0-SNAPSHOT" />
     <artifact name="org.eclipse.microprofile.jwt:jwt-auth-principal-prototype:1.0-SNAPSHOT" />
     <artifact name="javax.security.enterprise:javax.security.enterprise-api:1.0-b07" />
     <artifact name="org.bitbucket.b_c:jose4j:0.6.0" />
