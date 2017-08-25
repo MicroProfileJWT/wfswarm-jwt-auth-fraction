@@ -17,12 +17,14 @@ package org.wildfly.swarm.mpjwtauth.runtime;
 
 import java.util.Collection;
 
+import javax.enterprise.inject.spi.Extension;
 import javax.inject.Inject;
 
 import io.undertow.servlet.ServletExtension;
 import org.eclipse.microprofile.jwt.impl.DefaultJWTCallerPrincipalFactory;
 import org.eclipse.microprofile.jwt.principal.JWTCallerPrincipalFactory;
 import org.eclipse.microprofile.jwt.wfswarm.JWTAuthMethodExtension;
+import org.eclipse.microprofile.jwt.wfswarm.cdi.MPJWTExtension;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.DotName;
@@ -61,7 +63,8 @@ public class MPJWTAuthExtensionArchivePreparer implements DeploymentProcessor {
         // This is really a work around addAsServiceProvider not supporting multiple addAsServiceProvider calls (https://github.com/shrinkwrap/shrinkwrap/issues/112)
         JavaArchive jwtAuthJar = ShrinkWrap.create(JavaArchive.class, "jwt-auth-wfswarm.jar")
                 .addAsServiceProvider(ServletExtension.class, JWTAuthMethodExtension.class)
-                .addAsServiceProvider(JWTCallerPrincipalFactory.class, DefaultJWTCallerPrincipalFactory.class);
+                .addAsServiceProvider(JWTCallerPrincipalFactory.class, DefaultJWTCallerPrincipalFactory.class)
+                .addAsServiceProvider(Extension.class, MPJWTExtension.class);
         WARArchive war = archive.as(WARArchive.class);
         war.addAsLibraries(jwtAuthJar);
         // Check for LoginConfig annotation

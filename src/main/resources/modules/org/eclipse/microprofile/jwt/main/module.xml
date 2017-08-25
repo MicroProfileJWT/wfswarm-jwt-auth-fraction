@@ -3,10 +3,11 @@
   <resources>
     <artifact name="org.eclipse.microprofile.jwt:jwt-auth-wfswarm:${version.swarm.mpjwtauth}" />
     <artifact name="org.eclipse.microprofile.jwt:microprofile-jwt-auth:1.0-SNAPSHOT" />
-    <artifact name="org.eclipse.microprofile.jwt:jwt-auth-principal-ri:1.0-SNAPSHOT" />
+    <artifact name="org.eclipse.microprofile.jwt:jwt-auth-principal-prototype:1.0-SNAPSHOT" />
     <artifact name="javax.security.enterprise:javax.security.enterprise-api:1.0-b07" />
     <artifact name="org.bitbucket.b_c:jose4j:0.6.0" />
     <artifact name="org.slf4j:slf4j-api:1.7.21" />
+    <artifact name="javax.json:javax.json-api:1.1" />
   </resources>
 
   <dependencies>
@@ -14,6 +15,8 @@
     <module name="io.undertow.servlet" export="true" />
     <module name="org.picketbox" export="true" />
     <module name="org.jboss.logging" export="true" />
+    <module name="javax.enterprise.api"/>
+    <module name="javax.inject.api"/>
     <system>
       <paths>
         <path name="javax/security/auth" />
@@ -21,6 +24,7 @@
         <path name="javax/security/auth/login" />
         <path name="javax/crypto" />
         <path name="javax/crypto/spec" />
+        <path name="javax/enterprise/inject/spi" />
       </paths>
     </system>
   </dependencies>
