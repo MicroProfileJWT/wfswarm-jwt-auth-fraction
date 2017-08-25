@@ -46,7 +46,7 @@ import org.wildfly.swarm.undertow.WARArchive;
 @DeploymentScoped
 public class MPJWTAuthExtensionArchivePreparer implements DeploymentProcessor {
     private static Logger log = Logger.getLogger(MPJWTAuthExtensionArchivePreparer.class);
-    public static final DotName LOGIN_CONFIG = DotName.createSimple("org.eclipse.microprofile.annotation.LoginConfig");
+    public static final DotName LOGIN_CONFIG = DotName.createSimple("org.eclipse.microprofile.auth.LoginConfig");
     private final Archive archive;
     private final IndexView index;
 
