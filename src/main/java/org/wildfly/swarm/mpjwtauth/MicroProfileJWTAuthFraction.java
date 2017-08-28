@@ -29,6 +29,7 @@ import static org.wildfly.swarm.spi.api.Defaultable.string;
  */
 @Configurable("swarm.mpjwtauth")
 @DeploymentModule(name="org.eclipse.microprofile.jwt")
+@DeploymentModule(name="org.glassfish.javax.json")
 public class MicroProfileJWTAuthFraction implements Fraction<MicroProfileJWTAuthFraction> {
 
     @AttributeDocumentation("The URI of the JWT token issuer")

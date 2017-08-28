@@ -5,6 +5,7 @@
     <artifact name="org.eclipse.microprofile.jwt:microprofile-jwt-auth-api:1.0-SNAPSHOT" />
     <artifact name="org.eclipse.microprofile.jwt:jwt-auth-principal-prototype:1.0-SNAPSHOT" />
     <artifact name="javax.security.enterprise:javax.security.enterprise-api:1.0-b07" />
+    <artifact name="org.jboss.resteasy:resteasy-json-p-provider:3.0.6.Final" />
     <artifact name="org.bitbucket.b_c:jose4j:0.6.0" />
     <artifact name="org.slf4j:slf4j-api:1.7.21" />
     <!--

@@ -85,7 +85,7 @@ public class MPJWTAuthExtensionArchivePreparer implements DeploymentProcessor {
             war.addAsManifestResource(new StringAsset(fraction.getPublicKey()), "MP-JWT-SIGNER");
         }
         if(log.isInfoEnabled()) {
-            log.debug("jar: " + jwtAuthJar.toString(true));
+            log.info("jar: " + jwtAuthJar.toString(true));
             log.info("war: " + war.toString(true));
         }
     }
